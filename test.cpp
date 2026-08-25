@@ -1,4 +1,8 @@
 #include <iostream>
+#include <vector>
+#include <string>
+#include <cstdlib>
+#include <ctime>
 
 #define MENU_MAIN 0
 #define MENU_MISSION_LIST 1
