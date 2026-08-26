@@ -102,16 +102,10 @@ void complete_mission (GameState &gs, Mission &mission)
 
     if (mission.mission_type == KIND_MISSION)
     {
-        gs.player.reputation += 10;
-
-        std::cout << "Reputation: +10\n";
         std::cout << "You helped someone, We are proud of you\n";
     }
     else if (mission.mission_type == EVIL_MISSION)
     {
-        gs.player.reputation -= 5;
-
-        std::cout << "Reputation: -5 \n";
         std::cout << "You have completed the operation.\n"; 
     }
 
@@ -193,6 +187,7 @@ void do_mission (GameState &gs, Mission &mission)
         std::cout << "Correct!\n";  
     }
 
+    int mission_choice();
     int choice = mission_choice();
 
     if (mission.mission_type == KIND_MISSION)
@@ -214,7 +209,30 @@ void do_mission (GameState &gs, Mission &mission)
         }
         else 
         {
-            std::cout << "\nInvalid choice. >:/\n"
+            std::cout << "\nInvalid choice. >:/\n";
+            return; 
+        }
+    }
+    else if (mission.mission_type == EVIL_MISSION)
+    {
+        if (choice == 1)
+        {
+            std::cout << "You decided to continue the operation\n Good luck\n";
+            gs.player.reputation -= 2;
+        }
+        else if (choice == 2)
+        {
+            std::cout << "You decide to abort the operation\n Great choice, Son\n";
+            gs.player.reputation += 2;
+        }
+        else if (choice == 3)
+        {
+            std::cout << "You decided to take everything\n Devil look up to you, Son\n";
+            gs.player.reputation -= 15;
+        }
+        else 
+        {
+            std::cout << "\nInvalid choice. >:/\n";
             return; 
         }
     }
@@ -223,7 +241,7 @@ void do_mission (GameState &gs, Mission &mission)
     complete_mission(gs, mission);
 }
 
-int mission_choice()
+int mission_choice(GameState &gs, Mission &mission)
 {
     int choice;
 
@@ -231,9 +249,19 @@ int mission_choice()
     std::cout << "       WHAT WILL YOU DO?\n";
     std::cout << "\n================================\n";
 
-    std::cout << "1. Help them\n";
-    std::cout << "2. Ignore them\n";
-    std::cout << "3. Take advantage of the situation\n";
+    if (mission.mission_type == KIND_MISSION)
+    {
+        std::cout << "1. Help them\n";
+        std::cout << "2. Ignore them\n";
+        std::cout << "3. Take advantage of the situation\n";
+    }
+    else if (mission.mission_type == EVIL_MISSION)
+    {
+        std::cout << "1. Continue operation\n";
+        std::cout << "2. Abort operation\n";
+        std::cout << "3. Take everything\n";
+    }
+
     std::cout << "Your choice: ";
     std::cin >> choice; 
 
