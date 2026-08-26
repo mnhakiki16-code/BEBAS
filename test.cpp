@@ -192,8 +192,52 @@ void do_mission (GameState &gs, Mission &mission)
         
         std::cout << "Correct!\n";  
     }
+
+    int choice = mission_choice();
+
+    if (mission.mission_type == KIND_MISSION)
+    {
+        if (choice == 1)
+        {
+            std::cout << "You decide to help them\n YEAY YOU ARE KIND :D\n";
+            gs.player.reputation += 10;
+        }
+        else if (choice == 2)
+        {
+            std::cout << "You decide to ignore them\n sooooooo saddddd :(\n";
+            gs.player.reputation -= 2;
+        }
+        else if (choice == 3)
+        {
+            std::cout << "You decide to take advantage of the situation >:( \n";
+            gs.player.reputation -=10; 
+        }
+        else 
+        {
+            std::cout << "\nInvalid choice. >:/\n"
+            return; 
+        }
+    }
+
     mission.completed = true;
     complete_mission(gs, mission);
+}
+
+int mission_choice()
+{
+    int choice;
+
+    std::cout << "\n================================\n";
+    std::cout << "       WHAT WILL YOU DO?\n";
+    std::cout << "\n================================\n";
+
+    std::cout << "1. Help them\n";
+    std::cout << "2. Ignore them\n";
+    std::cout << "3. Take advantage of the situation\n";
+    std::cout << "Your choice: ";
+    std::cin >> choice; 
+
+    return choice;
 }
 
 void mission_list(GameState &gs)
