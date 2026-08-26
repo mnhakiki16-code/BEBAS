@@ -20,14 +20,20 @@ class Computer
 public:
     double multiplier;
     std::string name;
-    Computer(std::string name="", double multiplier=0): name(name), multiplier(multiplier)
+    int price;
+    Computer(std::string name="", double multiplier=0, int price = 0)
+    : name(name), multiplier(multiplier), price(price)
+
     {
 
     }
 };
 
 std::vector<Computer> computer_list = {
-    Computer("Shitty Starter Computer", 1),
+    Computer("Shitty Starter Computer", 1.0, 0),
+    Computer("ACER NITRO 5", 2.5, 16000000),
+    Computer("Lenovo", 1.5, 8000000),
+    Computer("Asus", 2.0, 7000000),
 };
 
 class PlayerState
@@ -35,7 +41,8 @@ class PlayerState
 public:
     std::string name;
     int money, reputation;
-    PlayerState (std::string name="", int money=0, int reputation=0): name(name), money(money), reputation(reputation)
+    int computer;
+    PlayerState (std::string name="", int money=0, int reputation=0,int computer = 0): name(name), money(money), reputation(reputation), computer(computer)
     {
 
     }
@@ -120,6 +127,33 @@ void complete_mission (GameState &gs, Mission &mission)
     std::cin >> _;
 }
 
+int mission_choice(GameState &gs, Mission &mission)
+{
+    int choice;
+
+    std::cout << "\n================================\n";
+    std::cout << "       WHAT WILL YOU DO?\n";
+    std::cout << "\n================================\n";
+
+    if (mission.mission_type == KIND_MISSION)
+    {
+        std::cout << "1. Help them\n";
+        std::cout << "2. Ignore them\n";
+        std::cout << "3. Take advantage of the situation\n";
+    }
+    else if (mission.mission_type == EVIL_MISSION)
+    {
+        std::cout << "1. Continue operation\n";
+        std::cout << "2. Abort operation\n";
+        std::cout << "3. Take everything\n";
+    }
+
+    std::cout << "Your choice: ";
+    std::cin >> choice; 
+
+    return choice;
+}
+
 void do_mission (GameState &gs, Mission &mission)
 {
     if (mission.completed)
@@ -187,8 +221,7 @@ void do_mission (GameState &gs, Mission &mission)
         std::cout << "Correct!\n";  
     }
 
-    int mission_choice();
-    int choice = mission_choice();
+    int choice = mission_choice(gs, mission);
 
     if (mission.mission_type == KIND_MISSION)
     {
@@ -239,33 +272,6 @@ void do_mission (GameState &gs, Mission &mission)
 
     mission.completed = true;
     complete_mission(gs, mission);
-}
-
-int mission_choice(GameState &gs, Mission &mission)
-{
-    int choice;
-
-    std::cout << "\n================================\n";
-    std::cout << "       WHAT WILL YOU DO?\n";
-    std::cout << "\n================================\n";
-
-    if (mission.mission_type == KIND_MISSION)
-    {
-        std::cout << "1. Help them\n";
-        std::cout << "2. Ignore them\n";
-        std::cout << "3. Take advantage of the situation\n";
-    }
-    else if (mission.mission_type == EVIL_MISSION)
-    {
-        std::cout << "1. Continue operation\n";
-        std::cout << "2. Abort operation\n";
-        std::cout << "3. Take everything\n";
-    }
-
-    std::cout << "Your choice: ";
-    std::cin >> choice; 
-
-    return choice;
 }
 
 void mission_list(GameState &gs)
@@ -322,6 +328,27 @@ void mission_list(GameState &gs)
 int yn_prompt(std::string prompt_string)
 {
 
+}
+
+void computer_shop(GameState &gs)
+{
+    while (1)
+    {
+        std::cout << "\n================================\n";
+        std::cout << "       WELCOME TO THE SHOP, SON\n";
+        std::cout << "\n================================\n";
+
+        std::cout << "Your money is: " << gs.player.money << " $\n";
+        std::cout << "Your current computer: "
+                  << computer_list[gs.player.computer].name << "\n";
+        std::cout << "Multiplier: "
+                  << computer_list[gs.player.computer].multiplier << "\n\n";
+        
+        for (int i = 0; i < computer_list.size(); ++i)
+        {
+            Computer &computer = computer_list[i];
+        }
+    }
 }
 
 signed main()
