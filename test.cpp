@@ -1,8 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <locale>
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <windows.h>
 
 #define MENU_MAIN 0
 #define MENU_MISSION_LIST 1
@@ -46,12 +48,12 @@ class MissionProblem
 {
 public:
     std::string statement;
-    int answer;
+    std::vector<std::string> answer;
 
     MissionProblem(
-        std::string statement="", std::vector<std::string> answers=std::vector<>()
+        std::string statement="", std::vector<std::string> answers=std::vector<std::string>()
     ) 
-    : statement(statement), answer(answer)
+    : statement(statement), answer(answers)
     {
 
     }
@@ -61,14 +63,15 @@ class Mission
 {
 public:
     int mission_type;
-    MissionProblem problem;
+    std::vector<MissionProblem> problem;
     std::string description;
     int prize;
+    bool completed;
 
     Mission(
-        int mission_type=-1, MissionProblem problem = MissionProblem(), std::string description = "", int prize = 0
+        int mission_type=-1, std::vector<MissionProblem> problem = {}, std::string description = "", int prize = 0
     )
-    : mission_type(mission_type), problem(problem), prize(prize), description(description)
+    : mission_type(mission_type), problem(problem), prize(prize), description(description), completed(false)
     {
 
     }
@@ -78,7 +81,7 @@ class GameState
 {
 public:
     PlayerState player;
-    std::vector<Mission> mission;
+    std::vector<Mission> missions;
     int menu;
     GameState(PlayerState player) : player(player)
     {
@@ -95,7 +98,7 @@ void complete_mission (GameState &gs, Mission &mission)
     //dapat duit
     gs.player.money += mission.prize;
 
-    std::cout << "Reward: +" << mission.prize << "money\n";
+    std::cout << "Reward: +" << mission.prize << " money\n";
 
     if (mission.mission_type == KIND_MISSION)
     {
@@ -117,11 +120,27 @@ void complete_mission (GameState &gs, Mission &mission)
               << gs.player.money << "\n";
     std::cout << "Current reputation: " 
               << gs.player.reputation << "\n";
+    
+    std::string _;
+    std::cout << "\nPress enter to continue . . . ";
+    std::cin >> _;
 }
 
 void do_mission (GameState &gs, Mission &mission)
 {
+    if (mission.completed)
+    {
+        std::cout << "\nThis mission has already completed\n";
+
+        std::string _;
+        std::cout << "Press enter to continue. . .\n";
+        std::cin >> _;
+
+        return;
+    }
+
     std::cout << "\n================================\n";
+    
     if (mission.mission_type == KIND_MISSION)
     {
         std::cout << "HELP PEOPLE\n";
@@ -135,23 +154,46 @@ void do_mission (GameState &gs, Mission &mission)
 
     std::cout << mission.description << "\n\n";
 
-    std::cout << "PROBLEM: \n";
-    std::cout << mission.problem.statement << "\n";
-
-    int answer; 
-
-    std::cout << "Your Answer: ";
-    std::cin >> answer;
-
-    if (answer == mission.problem.answer)
+    for (int i = 0; i < mission.problem.size(); ++i)
     {
-        complete_mission(gs, mission);
-    }
-    else 
-    {
+        std::cout << "\n--------------------------------\n";
+        std::cout << "Problem" << i + 1
+                  << "/" << mission.problem.size() << "\n";
+        std::cout << "\n--------------------------------\n";
+
+        std::cout << mission.problem[i].statement << "\n";
+
+        std::string answer;
+
+        std::cout << "Your Answer: ";
+        std::cin >> answer;
+
+        int found = 0;
+        for (auto &ans: mission.problem[i].answer)
+        {
+            if (ans == answer)
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found)
+        {
         std::cout << "\n MISSION FAILED!! \n";
         std::cout << "Wrong Answer.\n";
+
+        std::cout << "\nPress enter to continue . . . ";
+        std::string _;
+        std::cin >> _;
+
+        return;
+        }
+        
+        std::cout << "Correct!\n";  
     }
+    mission.completed = true;
+    completed_mission(gs, mission);
 }
 
 void mission_list(GameState &gs)
@@ -162,12 +204,12 @@ void mission_list(GameState &gs)
         std::cout << "       MISSION LIST: \n";
         std::cout << "\n================================\n";
 
-        for (int i = 0; i < gs.mission.size(); ++i)
+        for (int i = 0; i < gs.missions.size(); ++i)
         {
-            Mission &mission = gs.mission[i];
+            Mission &mission = gs.missions[i];
             
-            std::cout << "\n[" << i + 1 << "\n]";
-
+            std::cout << "\n[" << i + 1 << "]";
+ 
             if (mission.mission_type == KIND_MISSION)
             {
                 std::cout << "[HELP] ";
@@ -190,17 +232,18 @@ void mission_list(GameState &gs)
 
         if (option == 0)
         {
+            gs.menu = MENU_MAIN;
             return;
         }
 
-        if (option < 1 || option > gs.mission.size())
+        if (option < 1 || option > gs.missions.size())
         {
             std::cout << "Invalid mission.\n";
             continue;
         }
-        Mission &selected_mission = gs.mission[option - 1]; 
+        Mission &selected_mission = gs.missions[option - 1]; 
 
-        do_mission (gs, selected_mission);
+        do_mission(gs, selected_mission);
     }
 }
 
@@ -213,18 +256,33 @@ signed main()
 {
     std::string name;
 
+    SetConsoleOutputCP(CP_UTF8);
+    std::string biasa = "√";
+    std::cout << biasa << "\n";
+
     std::cout << "Enter your name: ";
     std::cin >> name;
+
 
     PlayerState ps(name);
     GameState gs(ps);
 
-    gs.problems.push_back(
-        Misison(
+    gs.missions.push_back(
+        Mission(
             KIND_MISSION,
-            MissionProblem(
+            {
+                MissionProblem(
+                    "Berapa banyak cara duduk melingkar dari 12 siswa",
+                    std::vector<std::string>{"39916800"}
+                ),
 
-            )
+                MissionProblem(
+                    ""
+                )
+            }
+
+            "HQQ butuh bantuan!",
+            3070
         )
     );
 
@@ -244,7 +302,7 @@ signed main()
 
             std::cout << "Enter option: ";
             std::cin >> option;
-            if (option == 1)
+            if (option == 1) 
             {
                 gs.menu = MENU_MISSION_LIST;
             }
@@ -252,7 +310,6 @@ signed main()
         else if (gs.menu == MENU_MISSION_LIST)
         {
             mission_list(gs);
-
             gs.menu = MENU_MAIN;
         }
         else if (gs.menu == MENU_MISSION_VIEW)
