@@ -111,7 +111,7 @@ void complete_mission (GameState &gs, Mission &mission)
     {
         gs.player.reputation -= 5;
 
-        std::cout << "Reputation: -5";
+        std::cout << "Reputation: -5 \n";
         std::cout << "You have completed the operation.\n"; 
     }
 
@@ -193,7 +193,7 @@ void do_mission (GameState &gs, Mission &mission)
         std::cout << "Correct!\n";  
     }
     mission.completed = true;
-    completed_mission(gs, mission);
+    complete_mission(gs, mission);
 }
 
 void mission_list(GameState &gs)
@@ -272,18 +272,32 @@ signed main()
             KIND_MISSION,
             {
                 MissionProblem(
-                    "Berapa banyak cara duduk melingkar dari 12 siswa",
+                    "There are 12 students in Class 12 in Melbourne.\n"
+                    "There are many different ways to sit in a circle.\n",
                     std::vector<std::string>{"39916800"}
                 ),
-
-                MissionProblem(
-                    ""
-                )
-            }
+            },
 
             "HQQ butuh bantuan!",
-            3070
+            32070
         )
+    );
+    gs.missions.push_back(
+        Mission(
+            EVIL_MISSION,
+            {
+                MissionProblem(
+                    "ISS wants to select 7 students from RUSHD High School.\n"
+                    "There are 12 boys and 6 girls who will participate in the selection process.\n"
+                    "How many ways are there to select at least 3 girls?\n",
+                    std::vector<std::string>{"13608"}
+                ),
+            },
+
+            "Ilung ma have 500 million dollar",
+            500000000
+        )
+
     );
 
     while (1)
