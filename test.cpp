@@ -34,6 +34,7 @@ std::vector<Computer> computer_list = {
     Computer("ACER NITRO 5", 2.5, 16000000),
     Computer("Lenovo", 1.5, 8000000),
     Computer("Asus", 2.0, 7000000),
+    Computer("Quantum Phantom", 99.0, 999999999),
 };
 
 class PlayerState
@@ -102,10 +103,17 @@ void complete_mission (GameState &gs, Mission &mission)
     std::cout << "       MISSION COMPLETE!\n";
     std::cout << "\n================================\n";
 
+
     //dapat duit
+    double multiplier = computer_list[gs.player.computer].multiplier;
+
+    int reward = mission.prize * multiplier;
+
     gs.player.money += mission.prize;
 
-    std::cout << "Reward: +" << mission.prize << " money\n";
+    std::cout << "Base Reward: " << mission.prize << " $\n";
+    std::cout << "Computer Multiplier: " << multiplier << "\n";
+    std::cout << "Final Reward: +$ " << reward << "\n";
 
     if (mission.mission_type == KIND_MISSION)
     {
@@ -347,7 +355,51 @@ void computer_shop(GameState &gs)
         for (int i = 0; i < computer_list.size(); ++i)
         {
             Computer &computer = computer_list[i];
+
+            std::cout << "[" << i + 1 << "] " << computer.name << "\n";
+            std::cout << "     Multiplier: " << computer.multiplier << " x\n";
+            std::cout << "     Price: " << computer.price << " $\n"; 
         }
+
+        std::cout << "[0] Back\n";
+
+        int option;
+
+        std::cout << "\nChose computer: ";
+        std::cin >> option;
+
+        if (option == 0)
+        {
+            return;
+        }
+
+        if (option < 1 || option > computer_list.size())
+        {
+            std::cout << "Invalid option\n";
+            continue;
+        }
+
+        int index = option - 1;
+
+        if (index == gs.player.computer)
+        {
+            std::cout << "You already own this computer. \n";
+            continue;
+        }
+
+        Computer &computer = computer_list[index];
+
+        if (gs.player.money < computer.price)
+        {
+            std::cout << "You don't have enough money\n";
+            continue;
+        }
+
+        gs.player.money -= computer.price;
+        gs.player.computer = index;
+
+        std::cout << "\nComputer Upgraded, Son!\n";
+        std::cout << "You now have: " << computer.name << "\n";
     }
 }
 
@@ -356,8 +408,6 @@ signed main()
     std::string name;
 
     SetConsoleOutputCP(CP_UTF8);
-    std::string biasa = "√";
-    std::cout << biasa << "\n";
 
     std::cout << "Enter your name: ";
     std::cin >> name;
@@ -393,8 +443,8 @@ signed main()
                 ),
             },
 
-            "Ilung ma have 500 million dollar",
-            500000000
+            "Ilung ma have 10 million dollar",
+            10000000
         )
 
     );
@@ -405,10 +455,15 @@ signed main()
         {
             std::cout << "NAME: " << gs.player.name << "\n"
                       << "MONEY: " << gs.player.money << "\n"
-                      << "REPUTATION: " << gs.player.reputation << "\n" << std::endl;
+                      << "REPUTATION: " << gs.player.reputation << "\n" 
+                      << "COMPUTER: " << gs.player.computer << "\n"
+                      << "Multiplier: " << computer_list[gs.player.computer].multiplier << " x\n";
+
+                      std::cout << std::endl; 
 
             std::cout << "1. MISSION LIST" << "\n"
-                      << "2. EXIT" << "\n";
+                      << "2. COMPUTER SHOP" << "\n"
+                      << "3. EXIT" << "\n";
             
 
             int option;
@@ -418,6 +473,14 @@ signed main()
             if (option == 1) 
             {
                 gs.menu = MENU_MISSION_LIST;
+            }
+            else if (option == 2)
+            {
+                gs.menu = MENU_SHOP;    
+            }
+            else if (option == 3)
+            {
+                break;
             }
         }
         else if (gs.menu == MENU_MISSION_LIST)
@@ -432,6 +495,11 @@ signed main()
         else if (gs.menu == MENU_MISSION_PROBLEM)
         {
 
+        }
+        else if (gs.menu == MENU_SHOP)
+        {
+            computer_shop(gs);
+            gs.menu = MENU_MAIN;
         }
     }
     return 0;
