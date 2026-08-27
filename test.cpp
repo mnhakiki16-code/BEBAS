@@ -67,6 +67,21 @@ public:
     }
 };
 
+class DefenseProblem 
+{
+    public:
+        std::string statement;
+        std::vector<std::string> answer;
+
+        DefenseProblem(
+            std::string statement = "",
+            std::vector<std::string> answer = {}
+        )
+            : statement(statement), answer(answer)
+        {
+        }
+};
+
 class Mission
 {
 public:
@@ -140,7 +155,7 @@ int mission_choice(GameState &gs, Mission &mission)
     int choice;
 
     std::cout << "\n================================\n";
-    std::cout << "       WHAT WILL YOU DO?\n";
+    std::cout << "        WHAT WILL YOU DO?\n";
     std::cout << "\n================================\n";
 
     if (mission.mission_type == KIND_MISSION)
@@ -160,6 +175,51 @@ int mission_choice(GameState &gs, Mission &mission)
     std::cin >> choice; 
 
     return choice;
+}
+
+bool hack_attack (GameState &gs) //HAMUINUI THGUIHAUIHGUIAHEQIGUJAIGHUIJISGHUISJOIERHFAIHTFIOAUOIHUIOSAHJIOUSAHIOUAIOHISHIOAUIOGHSOIU
+{
+    if (gs.player.reputation >= -5)
+    {
+        return true;
+    }
+
+    std::cout << "\n================================\n";
+    std::cout << "             WARNING!!";
+    std::cout << "\n================================\n";    
+
+    std::cout << "YOU ARE HACKED BY THE GODFATHER\n";
+    std::cout << "GET THE KEY TO COUNTERATTACK BY SOLVING THIS PROBLEM\n";
+
+    int index = rand() % defense_problem.size();
+
+    DefenseProblem &problem = defense_problem[index];
+
+    std::cout << "DEFENSE CHALLANGE\n";
+    std::cout << problem.statement << "\n";
+
+    std::string answer;
+    std::cout << "Your answer: ";
+    std::cin >> answer;
+
+    for (auto &ans : problem.answer)
+    {
+        if (answer == ans)
+        {
+            std::cout << "DEFENSE SUCCESFUL\n";
+            return true;
+        }
+    }
+    std::cout << "DEFENSE FAILED!\n";
+    
+    int lose_money = gs.player.money * 50 / 100;
+    gs.player.money -= lose_money;
+
+    std::cout << "THE GODFATHER TAKE 50% OF YOUR MONEY\n";
+    std::cout << "Money lost: $" << lose_money << "\n";
+    std::cout << "Remaining money: $" << gs.player.money << "\n";
+    
+    return false;
 }
 
 void do_mission (GameState &gs, Mission &mission)
@@ -402,6 +462,13 @@ void computer_shop(GameState &gs)
         std::cout << "You now have: " << computer.name << "\n";
     }
 }
+
+std::vector<DefenseProblem> defense_problem = 
+    {
+        DefenseProblem(
+            
+        )
+    };
 
 signed main()
 {
