@@ -31,10 +31,10 @@ public:
 
 std::vector<Computer> computer_list = {
     Computer("Shitty Starter Computer", 1.0, 0),
-    Computer("ACER NITRO 5", 2.5, 16000000),
-    Computer("Lenovo", 1.5, 8000000),
-    Computer("Asus", 2.0, 7000000),
-    Computer("Quantum Phantom", 99.0, 999999999),
+    Computer("ACER NITRO 5", 2.5, 16000),
+    Computer("Lenovo", 1.5, 7000),
+    Computer("Asus", 2.0, 8000),
+    Computer("Quantum Phantom", 33.0, 100000),
 };
 
 class PlayerState
@@ -109,7 +109,7 @@ void complete_mission (GameState &gs, Mission &mission)
 
     int reward = mission.prize * multiplier;
 
-    gs.player.money += mission.prize;
+    gs.player.money += reward;
 
     std::cout << "Base Reward: " << mission.prize << " $\n";
     std::cout << "Computer Multiplier: " << multiplier << "\n";
@@ -456,7 +456,7 @@ signed main()
             std::cout << "NAME: " << gs.player.name << "\n"
                       << "MONEY: " << gs.player.money << "\n"
                       << "REPUTATION: " << gs.player.reputation << "\n" 
-                      << "COMPUTER: " << gs.player.computer << "\n"
+                      << "COMPUTER: " << computer_list[gs.player.computer].name << "\n"
                       << "Multiplier: " << computer_list[gs.player.computer].multiplier << " x\n";
 
                       std::cout << std::endl; 
